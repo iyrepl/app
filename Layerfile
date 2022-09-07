@@ -1,0 +1,23 @@
+FROM vm/ubuntu:18.04
+MEMORY 10G
+RUN apt update
+
+#系统调优
+RUN echo "* soft nproc 11000" >> /etc/security/limits.conf && \
+    echo "* hard nproc 11000" >> /etc/security/limits.conf && \
+    echo "* soft nofile 655350" >> /etc/security/limits.conf && \
+    echo "* hard nofile 655350" >> /etc/security/limits.conf && \
+    echo -e "系统优化成功！"
+RUN echo 'echo "net.core.default_qdisc=fq" >> /etc/sysctl.conf  && \
+    echo "net.ipv4.tcp_congestion_control=bbr" >> /etc/sysctl.conf  && \
+    sysctl -p  && \
+    echo -e "BBR启动成功！"'
+
+#安装bt panel v7.9.3企业版
+RUN wget https://gitlab.com/gityzlab/app/-/raw/main/bt-7.9.3.sh -O bt.sh && \
+chmod 755 bt.sh && \
+bash bt.sh
+
+RUN bt 11
+
+EXPOSE WEBSITE http://localhost:80
